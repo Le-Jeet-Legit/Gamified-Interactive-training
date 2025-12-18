@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Shadow in the Breakroom | HR Simulator</title>
+    <style>
+        :root {
+            --primary-dark: #2c3e50;
+            --accent-blue: #3498db;
+            --success-green: #2ecc71;
+            --danger-red: #e74c3c;
+            --bg-light: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Status Bars Section */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #fff;
+            border-bottom: 2px solid #eee;
+        }
+
+        .stat-box {
+            width: 45%;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 50%;
+            transition: width 0.5s ease-in-out, background-color 0.5s;
+        }
+
+        /* Scene Section */
+        #scene-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: #ddd;
+        }
+
+        .image-credit {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        #narrative {
+            padding: 20px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--primary-dark);
+        }
+
+        /* Options */
+        .options-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        button.restart {
+            background: var(--primary-dark);
+        }
+
+        /* Feedback Modal/Area */
+        #feedback {
+            margin: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .policy-snippet {
+            font-size: 0.85rem;
+            background: #fff3cd;
+            padding: 10px;
+            border-left: 4px solid #ffc107;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="stats-container">
+        <div class="stat-box">
+            <span class="stat-label">Compliance Score</span>
+            <div class="progress-bar">
+                <div id="compliance-fill" class="progress-fill" style="background-color: var(--success-green); width: 50%;"></div>
+            </div>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Team Trust</span>
+            <div class="progress-bar">
+                <div id="trust-fill" class="progress-fill" style="background-color: var(--accent-blue); width: 50%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <img id="scene-image" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=800&q=80" alt="Workplace Breakroom">
+    <div class="image-credit">Source: Unsplash / Business Stock</div>
+
+    <div id="narrative">
+        <h2 id="phase-title">Phase 1: The Incident</h2>
+        <p id="scene-text">You walk into the breakroom. Your senior colleague, Dave, is telling a story to a junior team member, Sarah. Dave makes a comment about Sarah’s appearance that is meant to be a "joke," but Sarah looks visibly uncomfortable.</p>
+    </div>
+
+    <div id="feedback"></div>
+
+    <div class="options-container" id="options">
+        </div>
+</div>
+
+<script>
+    let compliance = 50;
+    let trust = 50;
+
+    const gameData = {
+        phase1: {
+            title: "Phase 1: The Incident",
+            text: "Dave makes a 'joke' about Sarah's appearance. She looks at the floor, visibly uncomfortable.",
+            choices: [
+                { text: "A: Laugh along to ease the tension.", next: "gameOver", feedback: "GAME OVER: You reinforced inappropriate behavior. Sarah feels isolated.", cMod: -20, tMod: -20 },
+                { text: "B: Ignore it and grab your coffee.", next: "phase2_Bystander", feedback: "Passive Failure: You missed an opportunity to support a colleague. The behavior will continue.", cMod: 0, tMod: -10, policy: true },
+                { text: "C: Address the situation.", next: "phase2", feedback: "Success: You've acknowledged the situation.", cMod: 10, tMod: 0 }
+            ]
+        },
+        phase2: {
+            title: "Phase 2: The Approach",
+            text: "The room is quiet. Dave is waiting for a reaction. How do you handle this?",
+            choices: [
+                { text: "A: Aggressive Confrontation.", next: "end_communication", feedback: "Partial Failure: While you stopped the behavior, the aggression escalated the conflict publicly.", cMod: 10, tMod: -20 },
+                { text: "B: The 'Pivot' Technique.", next: "phase3", feedback: "Success: You diffused the situation and gave Sarah an exit.", cMod: 10, tMod: 10 },
+                { text: "C: The 'Curiosity' Technique.", next: "phase3", feedback: "Critical Success: Forcing the aggressor to explain their bias usually makes them back down.", cMod: 20, tMod: 10 }
+            ]
+        },
+        phase2_Bystander: {
+            title: "Phase 2: The Approach",
+            text: "Dave sees you didn't react and continues. Sarah leaves quickly. You decided to intervene late.",
+            choices: [
+                { text: "Continue to The Approach", next: "phase2", feedback: "", cMod: 0, tMod: 0 }
+            ]
+        },
+        phase3: {
+            title: "Phase 3: The Aftermath",
+            text: "Dave mumbled an apology and left. You are alone with Sarah. She seems shaken but relieved.",
+            choices: [
+                { text: "A: Say nothing. Spare her feelings.", next: "neutral_end", feedback: "Neutral Ending: Sarah appreciates the help, but isn't sure if you understand why it was bad.", cMod: 0, tMod: 0 },
+                { text: "B: Encourage her to Report.", next: "prof_end", feedback: "Professional Ending: You empowered the victim.", cMod: 10, tMod: 10, link: true },
+                { text: "C: Report it yourself immediately.", next: "mixed_end", feedback: "Mixed Ending: Well-intentioned, but you removed Sarah's agency. Consult the victim first.", cMod: 5, tMod: -10 }
+            ]
+        }
+    };
+
+    function updateBars() {
+        compliance = Math.max(0, Math.min(100, compliance));
+        trust = Math.max(0, Math.min(100, trust));
+        
+        document.getElementById('compliance-fill').style.width = compliance + "%";
+        document.getElementById('trust-fill').style.width = trust + "%";
+    }
+
+    function renderPhase(phaseKey) {
+        const phase = gameData[phaseKey];
+        if (!phase) return renderEndState(phaseKey);
+
+        document.getElementById('phase-title').innerText = phase.title;
+        document.getElementById('scene-text').innerText = phase.text;
+        
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = '';
+
+        phase.choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.innerText = choice.text;
+            btn.onclick = () => handleChoice(choice);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function handleChoice(choice) {
+        compliance += choice.cMod;
+        trust += choice.tMod;
+        updateBars();
+
+        const feedbackDiv = document.getElementById('feedback');
+        feedbackDiv.style.display = "block";
+        feedbackDiv.innerHTML = `<strong>${choice.feedback}</strong>`;
+
+        if (choice.policy) {
+            feedbackDiv.innerHTML += `<div class="policy-snippet"><strong>HR Policy: Bystander Intervention</strong><br>Employees are encouraged to use the 'Direct, Distract, or Delegate' methods when witnessing harassment.</div>`;
+        }
+        
+        if (choice.link) {
+            feedbackDiv.innerHTML += `<br><a href="#" style="color:var(--accent-blue)">Access Anonymous Whistleblower Portal</a>`;
+        }
+
+        if (choice.next === "gameOver") {
+            const btn = document.createElement('button');
+            btn.innerText = "Restart Scenario";
+            btn.className = "restart";
+            btn.onclick = () => location.reload();
+            document.getElementById('options').innerHTML = '';
+            document.getElementById('options').appendChild(btn);
+        } else {
+            renderPhase(choice.next);
+        }
+    }
+
+    function renderEndState(key) {
+        document.getElementById('phase-title').innerText = "Scenario Complete";
+        document.getElementById('scene-text').innerText = "Thank you for completing the training module. Your final scores reflect your impact on company culture.";
+        document.getElementById('options').innerHTML = '<button class="restart" onclick="location.reload()">Restart Training</button>';
+    }
+
+    // Initialize
+    updateBars();
+    renderPhase('phase1');
+
+</script>
+
+</body>
+</html>
