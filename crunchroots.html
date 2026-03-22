@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRUNCHROOTS — Plant-Based Kettle Chips</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #1A3D2B;
+    --forest-light: #2D6347;
+    --cream: #F5F0E4;
+    --amber: #D4891A;
+    --amber-light: #F0A830;
+    --earth: #5C3D2E;
+    --white: #FDFBF7;
+    --dark: #0F1F16;
+    --muted: #6B7C70;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--dark);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: transparent;
+    transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(245,240,228,0.96);
+    backdrop-filter: blur(12px);
+    padding: 14px 48px;
+    border-bottom: 1px solid rgba(26,61,43,0.08);
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--forest);
+    letter-spacing: -0.5px;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--amber); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--forest);
+    text-decoration: none; opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; }
+  .nav-cta {
+    background: var(--forest); color: var(--cream);
+    padding: 10px 22px; border-radius: 100px;
+    font-size: 13px; font-weight: 500;
+    text-decoration: none; letter-spacing: 0.04em;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { background: var(--forest-light); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--forest);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    position: relative; overflow: hidden;
+    padding: 120px 48px 80px;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 28vw; font-weight: 900;
+    color: rgba(255,255,255,0.025);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: -2px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(212,137,26,0.15);
+    border: 1px solid rgba(212,137,26,0.35);
+    color: var(--amber-light);
+    padding: 6px 16px; border-radius: 100px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber-light); }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(56px, 9vw, 120px);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 0.92;
+    letter-spacing: -2px;
+    margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
+  }
+  .hero h1 em {
+    font-style: italic; font-weight: 300;
+    color: var(--amber-light);
+  }
+
+  .hero-sub {
+    font-size: 18px; font-weight: 300;
+    color: rgba(245,240,228,0.65);
+    max-width: 480px;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+  }
+
+  .hero-actions {
+    display: flex; gap: 16px; align-items: center;
+    flex-wrap: wrap; justify-content: center;
+    opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .btn-primary {
+    background: var(--amber); color: var(--dark);
+    padding: 16px 36px; border-radius: 100px;
+    font-size: 15px; font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,137,26,0.35); }
+  .btn-ghost {
+    color: var(--cream); border: 1px solid rgba(245,240,228,0.3);
+    padding: 16px 36px; border-radius: 100px;
+    font-size: 15px; font-weight: 400;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(245,240,228,0.6); background: rgba(245,240,228,0.05); }
+
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: fadeUp 1s 1.2s forwards;
+  }
+  .hero-scroll span { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,228,0.4); }
+  .scroll-line {
+    width: 1px; height: 40px; background: rgba(245,240,228,0.2);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: ''; position: absolute; top: -100%; left: 0;
+    width: 1px; height: 100%;
+    background: var(--amber-light);
+    animation: scrollAnim 1.8s ease-in-out infinite;
+  }
+
+  /* TICKER */
+  .ticker {
+    background: var(--amber); overflow: hidden;
+    padding: 14px 0;
+  }
+  .ticker-track {
+    display: flex; gap: 48px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+    width: max-content;
+  }
+  .ticker-item {
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--dark); display: flex; gap: 48px;
+  }
+  .ticker-sep { opacity: 0.4; }
+
+  /* STORY */
+  .story {
+    padding: 120px 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    max-width: 1200px; margin: 0 auto; align-items: center;
+  }
+  .story-label {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--amber); font-weight: 500; margin-bottom: 20px;
+  }
+  .story h2 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 54px);
+    font-weight: 700; line-height: 1.1;
+    color: var(--forest);
+    margin-bottom: 28px;
+    letter-spacing: -0.5px;
+  }
+  .story h2 em { font-style: italic; font-weight: 300; color: var(--earth); }
+  .story p { font-size: 16px; line-height: 1.75; color: var(--muted); margin-bottom: 20px; font-weight: 300; }
+  .story-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-top: 48px;
+  }
+  .stat { border-top: 2px solid var(--forest); padding-top: 16px; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 42px; font-weight: 900;
+    color: var(--forest); letter-spacing: -1px;
+    line-height: 1;
+  }
+  .stat-num sup { font-size: 20px; vertical-align: super; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 400; }
+  .story-visual {
+    background: var(--forest);
+    border-radius: 24px;
+    min-height: 480px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 40px;
+    position: relative; overflow: hidden;
+  }
+  .story-visual-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(212,137,26,0.2), transparent 60%),
+                radial-gradient(ellipse at bottom left, rgba(45,99,71,0.5), transparent 60%);
+  }
+  .story-visual-leaf {
+    position: absolute; top: 40px; right: 40px;
+    font-size: 80px; opacity: 0.15; transform: rotate(15deg);
+  }
+  .story-quote {
+    position: relative; z-index: 2;
+    font-family: var(--font-display);
+    font-size: 26px; font-weight: 300; font-style: italic;
+    color: var(--cream); line-height: 1.4;
+  }
+  .story-quote-author {
+    margin-top: 16px; font-size: 13px;
+    color: var(--amber-light); font-weight: 500; font-style: normal;
+    font-family: var(--font-body); letter-spacing: 0.05em;
+  }
+
+  /* PRODUCTS */
+  .products { padding: 80px 48px 120px; background: var(--white); }
+  .section-header { text-align: center; margin-bottom: 64px; }
+  .section-label {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--amber); font-weight: 500; margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700; line-height: 1.1;
+    color: var(--forest);
+    letter-spacing: -0.5px;
+  }
+  .section-title em { font-style: italic; font-weight: 300; }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .product-card {
+    border-radius: 20px;
+    padding: 32px 24px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.12); }
+  .product-card:nth-child(1) { background: #1A3D2B; }
+  .product-card:nth-child(2) { background: #5C3D2E; }
+  .product-card:nth-child(3) { background: #2D5016; }
+  .product-card:nth-child(4) { background: #7B4A1E; }
+  .product-card:nth-child(5) { background: #1A3548; }
+
+  .product-icon {
+    font-size: 42px; margin-bottom: 80px;
+    display: block; filter: saturate(0.9);
+  }
+  .product-badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 100px; font-size: 10px;
+    font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 10px;
+  }
+  .product-name {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700;
+    color: #fff; line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .product-desc { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; margin-bottom: 20px; }
+  .product-price { font-size: 18px; font-weight: 500; color: var(--amber-light); }
+  .product-add {
+    position: absolute; bottom: 24px; right: 24px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px; cursor: pointer;
+    transition: background 0.2s;
+    border: none;
+  }
+  .product-add:hover { background: rgba(255,255,255,0.25); }
+
+  /* WHY */
+  .why { padding: 120px 48px; background: var(--cream); }
+  .why-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1200px; margin: 64px auto 0;
+    background: rgba(26,61,43,0.1);
+    border-radius: 24px; overflow: hidden;
+  }
+  .why-card {
+    background: var(--cream);
+    padding: 48px 36px;
+    transition: background 0.3s;
+  }
+  .why-card:hover { background: var(--white); }
+  .why-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--forest); display: flex; align-items: center;
+    justify-content: center; font-size: 22px; margin-bottom: 24px;
+  }
+  .why-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--forest); margin-bottom: 12px; }
+  .why-desc { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; }
+
+  /* AI SECTION */
+  .ai-section {
+    padding: 120px 48px;
+    background: var(--dark);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .ai-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(45,99,71,0.3), transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(212,137,26,0.15), transparent 50%);
+  }
+  .ai-label {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--amber-light); font-weight: 500; margin-bottom: 20px;
+    position: relative; z-index: 2;
+  }
+  .ai-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900; line-height: 1.05;
+    color: var(--cream); letter-spacing: -1.5px;
+    max-width: 720px; margin: 0 auto 28px;
+    position: relative; z-index: 2;
+  }
+  .ai-title em { font-style: italic; font-weight: 300; color: var(--amber-light); }
+  .ai-sub {
+    font-size: 17px; color: rgba(245,240,228,0.5); font-weight: 300;
+    max-width: 520px; margin: 0 auto 64px; line-height: 1.65;
+    position: relative; z-index: 2;
+  }
+  .ai-pills {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    justify-content: center; margin-bottom: 64px;
+    position: relative; z-index: 2;
+  }
+  .ai-pill {
+    background: rgba(245,240,228,0.06);
+    border: 1px solid rgba(245,240,228,0.12);
+    color: rgba(245,240,228,0.7);
+    padding: 10px 20px; border-radius: 100px;
+    font-size: 13px; font-weight: 400;
+  }
+  .ai-pill strong { color: var(--amber-light); font-weight: 500; }
+
+  /* TESTIMONIALS */
+  .testimonials { padding: 120px 48px; background: var(--white); }
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; max-width: 1200px; margin: 64px auto 0;
+  }
+  .tcard {
+    background: var(--cream); border-radius: 20px;
+    padding: 36px; position: relative;
+  }
+  .tcard-quote {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 300; font-style: italic;
+    color: var(--forest); line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .tcard-stars { color: var(--amber); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+  .tcard-author { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+  /* CTA */
+  .cta-section {
+    padding: 120px 48px;
+    background: var(--forest);
+    text-align: center;
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 80px);
+    font-weight: 900; color: var(--cream);
+    letter-spacing: -2px; line-height: 1;
+    margin-bottom: 12px;
+  }
+  .cta-title em { font-style: italic; font-weight: 300; color: var(--amber-light); }
+  .cta-sub { font-size: 16px; color: rgba(245,240,228,0.5); margin-bottom: 48px; font-weight: 300; }
+  .cta-form {
+    display: flex; gap: 12px; justify-content: center;
+    flex-wrap: wrap; max-width: 480px; margin: 0 auto;
+  }
+  .cta-input {
+    flex: 1; min-width: 240px;
+    background: rgba(245,240,228,0.08);
+    border: 1px solid rgba(245,240,228,0.2);
+    border-radius: 100px; padding: 14px 24px;
+    font-size: 15px; color: var(--cream);
+    font-family: var(--font-body); outline: none;
+  }
+  .cta-input::placeholder { color: rgba(245,240,228,0.35); }
+  .cta-input:focus { border-color: rgba(245,240,228,0.5); }
+  .cta-btn {
+    background: var(--amber); color: var(--dark);
+    padding: 14px 28px; border-radius: 100px;
+    border: none; font-size: 15px; font-weight: 500;
+    cursor: pointer; font-family: var(--font-body);
+    transition: transform 0.2s; white-space: nowrap;
+  }
+  .cta-btn:hover { transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark); padding: 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 900; color: var(--cream);
+    letter-spacing: -0.5px;
+  }
+  .footer-logo span { color: var(--amber); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 12px; color: rgba(245,240,228,0.4); text-decoration: none; }
+  .footer-links a:hover { color: var(--cream); }
+  .footer-copy { font-size: 12px; color: rgba(245,240,228,0.25); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollAnim {
+    0% { top: -100%; }
+    100% { top: 100%; }
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .story { grid-template-columns: 1fr; padding: 80px 24px; gap: 48px; }
+    .products-grid { grid-template-columns: 1fr 1fr; }
+    .products-grid .product-card:last-child { grid-column: 1 / -1; }
+    .why-grid { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .products, .why, .ai-section, .testimonials, .cta-section { padding: 80px 24px; }
+    footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">CRUNCH<span>ROOTS</span></a>
+  <ul class="nav-links">
+    <li><a href="#story">Our Story</a></li>
+    <li><a href="#products">Flavors</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#ai">AI-First</a></li>
+  </ul>
+  <a href="#order" class="nav-cta">Shop Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text">CRUNCH</div>
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    100% Plant-Based · Kettle Cooked · AI-First
+  </div>
+  <h1>Grown from<br>the <em>earth.</em><br>Built for<br>the bold.</h1>
+  <p class="hero-sub">Premium plant-based kettle chips crafted with global flavors and zero compromise. Snacking, reimagined.</p>
+  <div class="hero-actions">
+    <a href="#products" class="btn-primary">Explore Flavors</a>
+    <a href="#story" class="btn-ghost">Our Story</a>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-item">
+      <span>Plant-Based</span><span class="ticker-sep">✦</span>
+      <span>Kettle Cooked</span><span class="ticker-sep">✦</span>
+      <span>Non-GMO Verified</span><span class="ticker-sep">✦</span>
+      <span>Carbon-Neutral Packaging</span><span class="ticker-sep">✦</span>
+      <span>Bold Global Flavors</span><span class="ticker-sep">✦</span>
+      <span>AI-Personalized</span><span class="ticker-sep">✦</span>
+      <span>Compostable Bags</span><span class="ticker-sep">✦</span>
+      <span>No Artificial Anything</span><span class="ticker-sep">✦</span>
+    </div>
+    <div class="ticker-item" aria-hidden="true">
+      <span>Plant-Based</span><span class="ticker-sep">✦</span>
+      <span>Kettle Cooked</span><span class="ticker-sep">✦</span>
+      <span>Non-GMO Verified</span><span class="ticker-sep">✦</span>
+      <span>Carbon-Neutral Packaging</span><span class="ticker-sep">✦</span>
+      <span>Bold Global Flavors</span><span class="ticker-sep">✦</span>
+      <span>AI-Personalized</span><span class="ticker-sep">✦</span>
+      <span>Compostable Bags</span><span class="ticker-sep">✦</span>
+      <span>No Artificial Anything</span><span class="ticker-sep">✦</span>
+    </div>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div>
+    <p class="story-label reveal">Our Story</p>
+    <h2 class="reveal reveal-delay-1">Not just a <em>snack.</em><br>A statement.</h2>
+    <p class="reveal reveal-delay-2">The snack industry is dominated by brands built decades ago with yesterday's thinking. We saw a gap: the fastest-growing category (potato chips, +47% since 2019), the most underserved segment (premium plant-based), and zero dominant player at the top.</p>
+    <p class="reveal reveal-delay-2">CRUNCHROOTS was born from data, shaped by AI, and crafted for people who refuse to settle for bland. We use artificial intelligence to design flavor profiles, personalize recommendations, and predict what you'll love before you know it yourself.</p>
+    <div class="story-stats">
+      <div class="stat reveal reveal-delay-3">
+        <div class="stat-num">+47<sup>%</sup></div>
+        <div class="stat-label">Chip category growth 2019–2023</div>
+      </div>
+      <div class="stat reveal reveal-delay-3">
+        <div class="stat-num">80<sup>%</sup></div>
+        <div class="stat-label">Plant-based share of chip revenue</div>
+      </div>
+      <div class="stat reveal reveal-delay-4">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Bold launch flavors, zero compromises</div>
+      </div>
+      <div class="stat reveal reveal-delay-4">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Artificial colors, flavors or preservatives</div>
+      </div>
+    </div>
+  </div>
+  <div class="story-visual reveal reveal-delay-2">
+    <div class="story-visual-bg"></div>
+    <div class="story-visual-leaf">🌿</div>
+    <div class="story-quote">
+      "We didn't guess what snackers wanted. We let the data speak — then we made something extraordinary from it."
+      <div class="story-quote-author">— CRUNCHROOTS Founding Team</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="section-header">
+    <p class="section-label reveal">The Lineup</p>
+    <h2 class="section-title reveal reveal-delay-1">Five flavors.<br><em>Zero compromises.</em></h2>
+  </div>
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <span class="product-icon">🧂</span>
+      <div class="product-badge">Bestseller</div>
+      <div class="product-name">Classic Sea Salt</div>
+      <div class="product-desc">Purist's pick. Stone-ground sea salt on hand-cut kettle chips. Simple, perfect, timeless.</div>
+      <div class="product-price">₹299</div>
+      <button class="product-add">+</button>
+    </div>
+    <div class="product-card reveal reveal-delay-1">
+      <span class="product-icon">🌶️</span>
+      <div class="product-badge">Spicy</div>
+      <div class="product-name">Smoky Jalapeño & Lime</div>
+      <div class="product-desc">Fire-roasted jalapeño heat, balanced with a squeeze of cold-pressed lime. Addictive.</div>
+      <div class="product-price">₹329</div>
+      <button class="product-add">+</button>
+    </div>
+    <div class="product-card reveal reveal-delay-2">
+      <span class="product-icon">✨</span>
+      <div class="product-badge">Our Signature</div>
+      <div class="product-name">Turmeric & Black Pepper</div>
+      <div class="product-desc">India-inspired. Golden turmeric meets bold black pepper — our hero differentiator. Unique in market.</div>
+      <div class="product-price">₹349</div>
+      <button class="product-add">+</button>
+    </div>
+    <div class="product-card reveal reveal-delay-3">
+      <span class="product-icon">🔥</span>
+      <div class="product-badge">Fan Favorite</div>
+      <div class="product-name">Cajun Spice</div>
+      <div class="product-desc">Louisiana-inspired spice blend. Smoky, peppery, complex. Not for the timid.</div>
+      <div class="product-price">₹329</div>
+      <button class="product-add">+</button>
+    </div>
+    <div class="product-card reveal reveal-delay-4">
+      <span class="product-icon">🍎</span>
+      <div class="product-badge">Tangy</div>
+      <div class="product-name">Apple Cider Vinegar & Herb</div>
+      <div class="product-desc">Tart apple cider vinegar with rosemary and thyme. Sophisticated snacking reimagined.</div>
+      <div class="product-price">₹329</div>
+      <button class="product-add">+</button>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why" id="why">
+  <div class="section-header">
+    <p class="section-label reveal">Why CrunchRoots</p>
+    <h2 class="section-title reveal reveal-delay-1">What makes us <em>different.</em></h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal">
+      <div class="why-icon">🌱</div>
+      <div class="why-title">100% Plant-Based</div>
+      <div class="why-desc">Every ingredient comes from the earth. Non-GMO verified, with full supply chain transparency. No exceptions, no fine print.</div>
+    </div>
+    <div class="why-card reveal reveal-delay-1">
+      <div class="why-icon">🫙</div>
+      <div class="why-title">Kettle Cooked</div>
+      <div class="why-desc">Batch-cooked in small kettles for maximum crunch and depth of flavor. Industrial conveyor-belt chips can't compete.</div>
+    </div>
+    <div class="why-card reveal reveal-delay-2">
+      <div class="why-icon">🤖</div>
+      <div class="why-title">AI-First Company</div>
+      <div class="why-desc">From demand forecasting to personalized flavor quizzes, AI powers every decision — giving us speed and precision incumbents don't have.</div>
+    </div>
+    <div class="why-card reveal reveal-delay-3">
+      <div class="why-icon">♻️</div>
+      <div class="why-title">Carbon-Neutral</div>
+      <div class="why-desc">Compostable bags, renewable energy manufacturing, and offset programs. Delicious shouldn't cost the planet.</div>
+    </div>
+    <div class="why-card reveal reveal-delay-4">
+      <div class="why-icon">🌍</div>
+      <div class="why-title">Global Flavors</div>
+      <div class="why-desc">Inspired by spice traditions across India, Louisiana, Mexico and the Mediterranean. Every bag is a passport.</div>
+    </div>
+    <div class="why-card reveal reveal-delay-4">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">No Compromise</div>
+      <div class="why-desc">No artificial colors. No preservatives. No mystery ingredients. Just real food that tastes extraordinary.</div>
+    </div>
+  </div>
+</section>
+
+<!-- AI SECTION -->
+<section class="ai-section" id="ai">
+  <div class="ai-bg"></div>
+  <p class="ai-label reveal">Technology</p>
+  <h2 class="ai-title reveal reveal-delay-1">The first snack brand <em>built by AI,</em> for humans.</h2>
+  <p class="ai-sub reveal reveal-delay-2">We didn't just use AI as a gimmick. It's the backbone of every business decision we make.</p>
+  <div class="ai-pills reveal reveal-delay-2">
+    <div class="ai-pill"><strong>ChatGPT</strong> — Brand naming & flavor ideation</div>
+    <div class="ai-pill"><strong>Claude</strong> — Market analysis & strategy</div>
+    <div class="ai-pill"><strong>Canva AI</strong> — Visual identity & packaging</div>
+    <div class="ai-pill"><strong>Gemini</strong> — Customer trend forecasting</div>
+    <div class="ai-pill"><strong>AI Quiz</strong> — Personalized flavor matching</div>
+    <div class="ai-pill"><strong>Predictive Analytics</strong> — Demand forecasting</div>
+  </div>
+  <a href="#order" class="btn-primary reveal reveal-delay-3" style="display:inline-block">Find Your Flavor →</a>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-header">
+    <p class="section-label reveal">Reviews</p>
+    <h2 class="section-title reveal reveal-delay-1">The people <em>have spoken.</em></h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="tcard reveal">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-quote">"The Turmeric & Black Pepper flavor is unlike anything I've had. It feels both familiar and completely new. Absolutely obsessed."</div>
+      <div class="tcard-author">Priya M. — Mumbai</div>
+    </div>
+    <div class="tcard reveal reveal-delay-1">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-quote">"Finally a chip brand that takes plant-based seriously without making it taste like cardboard. The Cajun Spice is fire — literally."</div>
+      <div class="tcard-author">Rohan K. — Bengaluru</div>
+    </div>
+    <div class="tcard reveal reveal-delay-2">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-quote">"The AI flavor quiz actually got it right. I'm a Jalapeño & Lime person through and through, and I didn't even know it until CrunchRoots told me."</div>
+      <div class="tcard-author">Ananya S. — Delhi</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="order">
+  <h2 class="cta-title reveal">Ready to <em>crunch?</em></h2>
+  <p class="cta-sub reveal reveal-delay-1">Get early access + 20% off your first order.</p>
+  <div class="cta-form reveal reveal-delay-2">
+    <input type="email" class="cta-input" placeholder="Your email address">
+    <button class="cta-btn">Get Early Access</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CRUNCH<span>ROOTS</span></div>
+  <div class="footer-links">
+    <a href="#">About</a>
+    <a href="#">Flavors</a>
+    <a href="#">Sustainability</a>
+    <a href="#">Contact</a>
+    <a href="#">Privacy</a>
+  </div>
+  <div class="footer-copy">© 2024 CrunchRoots. All rights reserved.</div>
+</footer>
+
+<script>
+  // Sticky nav
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Add to cart button
+  document.querySelectorAll('.product-add').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const original = btn.textContent;
+      btn.textContent = '✓';
+      btn.style.background = 'rgba(212,137,26,0.5)';
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.style.background = '';
+      }, 1200);
+    });
+  });
+
+  // Email form
+  document.querySelector('.cta-btn').addEventListener('click', () => {
+    const input = document.querySelector('.cta-input');
+    if (input.value) {
+      document.querySelector('.cta-btn').textContent = 'You\'re In! 🎉';
+      input.value = '';
+      setTimeout(() => {
+        document.querySelector('.cta-btn').textContent = 'Get Early Access';
+      }, 3000);
+    }
+  });
+</script>
+</body>
+</html>
